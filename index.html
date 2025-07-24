@@ -793,8 +793,14 @@
         // 保存された値の読み込み
         function loadSavedValues() {
             const savedValues = JSON.parse(localStorage.getItem('shadowverse-form-values') || '{}');
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('date').value = today;
+            
+            // ローカルタイムゾーン基準の日付取得
+            const today = new Date();
+            const todayString = today.getFullYear() + '-' + 
+                               String(today.getMonth() + 1).padStart(2, '0') + '-' + 
+                               String(today.getDate()).padStart(2, '0');
+            
+            document.getElementById('date').value = todayString;
             
             if (savedValues.mode) document.getElementById('mode').value = savedValues.mode;
             if (savedValues.myClass) document.getElementById('my-class').value = savedValues.myClass;
