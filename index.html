@@ -292,6 +292,45 @@
             color: #a0a0a0;
         }
 
+        .footer-links {
+            background: linear-gradient(135deg, #3a3a3a 0%, #4a4a4a 100%);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 30px;
+            text-align: center;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .footer-links h3 {
+            color: #4a9eff;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .footer-links-grid {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .footer-link {
+            color: #e0e0e0;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .footer-link:hover {
+            background: rgba(74, 158, 255, 0.1);
+            color: #4a9eff;
+            transform: translateY(-1px);
+        }
+
         .filter-container {
             background: #2d2d2d;
             padding: 15px;
@@ -329,6 +368,11 @@
 
             .filter-row {
                 grid-template-columns: 1fr;
+            }
+
+            .footer-links-grid {
+                flex-direction: column;
+                gap: 15px;
             }
         }
 
@@ -658,6 +702,21 @@
             <!-- 広告エリア -->
             <p><i class="fas fa-ad"></i> 広告エリア</p>
             <p>Google AdSenseコードをここに挿入</p>
+        </div>
+
+        <div class="footer-links">
+            <h3><i class="fas fa-info-circle"></i> サイト情報</h3>
+            <div class="footer-links-grid">
+                <a href="privacy-policy.html" class="footer-link">
+                    <i class="fas fa-shield-alt"></i> プライバシーポリシー
+                </a>
+                <a href="terms.html" class="footer-link">
+                    <i class="fas fa-file-contract"></i> 利用規約
+                </a>
+                <a href="contact.html" class="footer-link">
+                    <i class="fas fa-envelope"></i> お問い合わせ
+                </a>
+            </div>
         </div>
     </div>
 
@@ -1621,9 +1680,9 @@
 </html>
     <script id="html_badge_script1">
         window.__genspark_remove_badge_link = "https://www.genspark.ai/api/html_badge/" +
-            "remove_badge?token=To%2FBnjzloZ3UfQdcSaYfDuH2Q1VUTgPWbEBXxnUa61gvyfOzt8yagH1Ia8Uzxt1M6EMmPXVyWG1DS67Qy%2FOiJNCtQ%2Ff5lc8cPMOs1EguVyWMJSNirK6C2SRzpIlR22Lbao%2FsqUB27Hhgv1FFPBeNYBOrNHnnvKZ%2FB0dNSKsPxgcz3ZB%2Fyc1MhvGap1eXxOSUKBUnjTK3InY5p%2FF7ARLTArZ3%2FdBfIltGqCEWv6pK66eBZPiAwVLVmYCHHwysMtA1yTDQjb65IIGYuUr7yOOL3gP%2BL%2Fwwm8v3CmbwluIorQQGy5sdA9bkCCdy%2FOkgMp%2FuMlIDpBJEPLGe8RhPKDavsNEFWQEAjj9PjlkmyGppoH91iWRlmnjtW6onZgnbcSZA%2BdGxoHhe8tbfF3B4zn02cvh8YfLTCF53az5jQNK4u%2FNyHthbjfjzB7y%2Bx6b37T9LXlVCPnZO19aGWCTPrqxvSVd1uARiQGT%2BKleZEcrdBf2DizPIwgjy8XMutygVxOdYrfERd7ltSVg%2FXPFhIugOokMhzPbXEBbBiQLqZzFJjiE%3D";
+            "remove_badge?token=To%2FBnjzloZ3UfQdcSaYfDmaBcIha66ZxKtkrKb1ajszSi9%2BxB0adzDzEo54OVSPjKi4fOEQLG28ZHgJWRoz5o4Nym76YZZ%2BT%2FYe38KBWfTa1w0DclMSks870U%2FeBJgKn6V4BifJwMX1y5ZcbDhpYghqvE%2FV87KdnRIS%2B%2Fk%2FOjvCR%2B0EHDEqNCg6G0%2BfY67XkQgk0GwrGj5NQ%2B3ONmjQKFAPuCS336riPTfoODCMyGfpV43mlCM3%2FUVbGD%2BaUROao7w2JhueHeGQn41w4vbh1OSdvc0NN%2FunwotqTTcUZpoMk8J4wjiZs8vCKZL7MP7XEtI2z9h7u3G11T%2FXCAVf5dBWK0Xbzh7j4f0Khl%2FHeXVAm1k0m3rYLUHcGo9cUQippbV9sQHrNH5dsJ0A7Cjh3QzjeyChD%2FtzcO8l0Z4HATW%2BwJDk2sv%2BJEX5RrLjElDP89Lo17FX90lLs1mip%2Bb66xpj%2BZW6M4kOzudo1vAGzxl6y2NWzd1ehymr3qufP79NQDPtufo6J4RgqJ5AmirI%2FtA%3D%3D";
         window.__genspark_locale = "ja-JP";
-        window.__genspark_token = "To/BnjzloZ3UfQdcSaYfDuH2Q1VUTgPWbEBXxnUa61gvyfOzt8yagH1Ia8Uzxt1M6EMmPXVyWG1DS67Qy/OiJNCtQ/f5lc8cPMOs1EguVyWMJSNirK6C2SRzpIlR22Lbao/sqUB27Hhgv1FFPBeNYBOrNHnnvKZ/B0dNSKsPxgcz3ZB/yc1MhvGap1eXxOSUKBUnjTK3InY5p/F7ARLTArZ3/dBfIltGqCEWv6pK66eBZPiAwVLVmYCHHwysMtA1yTDQjb65IIGYuUr7yOOL3gP+L/wwm8v3CmbwluIorQQGy5sdA9bkCCdy/OkgMp/uMlIDpBJEPLGe8RhPKDavsNEFWQEAjj9PjlkmyGppoH91iWRlmnjtW6onZgnbcSZA+dGxoHhe8tbfF3B4zn02cvh8YfLTCF53az5jQNK4u/NyHthbjfjzB7y+x6b37T9LXlVCPnZO19aGWCTPrqxvSVd1uARiQGT+KleZEcrdBf2DizPIwgjy8XMutygVxOdYrfERd7ltSVg/XPFhIugOokMhzPbXEBbBiQLqZzFJjiE=";
+        window.__genspark_token = "To/BnjzloZ3UfQdcSaYfDmaBcIha66ZxKtkrKb1ajszSi9+xB0adzDzEo54OVSPjKi4fOEQLG28ZHgJWRoz5o4Nym76YZZ+T/Ye38KBWfTa1w0DclMSks870U/eBJgKn6V4BifJwMX1y5ZcbDhpYghqvE/V87KdnRIS+/k/OjvCR+0EHDEqNCg6G0+fY67XkQgk0GwrGj5NQ+3ONmjQKFAPuCS336riPTfoODCMyGfpV43mlCM3/UVbGD+aUROao7w2JhueHeGQn41w4vbh1OSdvc0NN/unwotqTTcUZpoMk8J4wjiZs8vCKZL7MP7XEtI2z9h7u3G11T/XCAVf5dBWK0Xbzh7j4f0Khl/HeXVAm1k0m3rYLUHcGo9cUQippbV9sQHrNH5dsJ0A7Cjh3QzjeyChD/tzcO8l0Z4HATW+wJDk2sv+JEX5RrLjElDP89Lo17FX90lLs1mip+b66xpj+ZW6M4kOzudo1vAGzxl6y2NWzd1ehymr3qufP79NQDPtufo6J4RgqJ5AmirI/tA==";
     </script>
     
     <script id="html_notice_dialog_script" src="https://www.genspark.ai/notice_dialog.js"></script>
