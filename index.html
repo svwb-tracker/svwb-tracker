@@ -794,6 +794,8 @@
         // 保存された値の読み込み
         function loadSavedValues() {
             const savedValues = JSON.parse(localStorage.getItem('shadowverse-form-values') || '{}');
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('date').value = today;
             
             if (savedValues.date) document.getElementById('date').value = savedValues.date;
             if (savedValues.mode) document.getElementById('mode').value = savedValues.mode;
@@ -801,19 +803,16 @@
             if (savedValues.deckName) document.getElementById('deck-name').value = savedValues.deckName;
             if (savedValues.currentRank) document.getElementById('current-rank').value = savedValues.currentRank;
             if (savedValues.currentGroup) document.getElementById('current-group').value = savedValues.currentGroup;
-            if (savedValues.memo) document.getElementById('memo').value = savedValues.memo;
         }
 
         // フォーム値の保存
         function saveFormValues() {
             const values = {
-                date: document.getElementById('date').value,
                 mode: document.getElementById('mode').value,
                 myClass: document.getElementById('my-class').value,
                 deckName: document.getElementById('deck-name').value,
                 currentRank: document.getElementById('current-rank').value,
                 currentGroup: document.getElementById('current-group').value,
-                memo: document.getElementById('memo').value
             };
             localStorage.setItem('shadowverse-form-values', JSON.stringify(values));
         }
