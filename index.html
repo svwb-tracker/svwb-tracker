@@ -952,13 +952,14 @@
                     classStats[match.myClass].wins++;
                 }
             });
-            
-            const labels = Object.keys(classStats);
-            const winRates = labels.map(cls => 
-                classStats[cls].total > 0 ? 
+
+            const classOrder = ['エルフ', 'ロイヤル', 'ウィッチ', 'ドラゴン', 'ナイトメア', 'ビショップ', 'ネメシス'];
+            const labels = classOrder.filter(cls => classStats[cls]);
+            const winRates = classOrder.map(cls => 
+                classStats[cls] && classStats[cls].total > 0 ? 
                 ((classStats[cls].wins / classStats[cls].total) * 100).toFixed(1) : 0
             );
-            const colors = labels.map(cls => classColors[cls] || '#777');
+            const colors = classOrder.map(cls => classColors[cls] || '#777');
             
             charts.class = new Chart(ctx, {
                 type: 'bar',
@@ -1014,12 +1015,13 @@
                 }
             });
             
-            const labels = Object.keys(opponentStats);
+            const classOrder = ['エルフ', 'ロイヤル', 'ウィッチ', 'ドラゴン', 'ナイトメア', 'ビショップ', 'ネメシス'];
+            const labels = classOrder.filter(cls => opponentStats[cls]);
             const winRates = labels.map(cls => 
-                opponentStats[cls].total > 0 ? 
-                ((opponentStats[cls].wins / opponentStats[cls].total) * 100).toFixed(1) : 0
+                ((opponentStats[cls].wins / opponentStats[cls].total) * 100).toFixed(1)
             );
             const colors = labels.map(cls => classColors[cls] || '#777');
+
             
             charts.opponent = new Chart(ctx, {
                 type: 'bar',
@@ -1135,9 +1137,10 @@
                 }
             });
             
-            const labels = Object.keys(turnStats);
-            const winRates = labels.map(turn => 
-                turnStats[turn].total > 0 ? 
+            const turnOrder = ['先行', '後攻'];
+            const labels = turnOrder.filter(turn => turnStats[turn]);
+            const winRates = turnOrder.map(turn => 
+                turnStats[turn] && turnStats[turn].total > 0 ? 
                 ((turnStats[turn].wins / turnStats[turn].total) * 100).toFixed(1) : 0
             );
             
@@ -1148,8 +1151,8 @@
                     datasets: [{
                         label: '勝率 (%)',
                         data: winRates,
-                        backgroundColor: ['#42a5f5', '#5c6bc0'],
-                        borderColor: ['#1e88e5', '#3f51b5'],
+                        backgroundColor: ['#00bcd4', '#e91e63'],
+                        borderColor: ['#0097a7', '#c2185b'],
                         borderWidth: 2
                     }]
                 },
@@ -1194,13 +1197,14 @@
                     groupStats[match.currentGroup].wins++;
                 }
             });
-            
-            const labels = Object.keys(groupStats);
-            const winRates = labels.map(group => 
-                groupStats[group].total > 0 ? 
+
+            const groupOrder = ['エメラルド', 'トパーズ', 'ルビー', 'サファイア', 'ダイヤモンド'];
+            const labels = groupOrder.filter(group => groupStats[group]);
+            const winRates = groupOrder.map(group => 
+                groupStats[group] && groupStats[group].total > 0 ? 
                 ((groupStats[group].wins / groupStats[group].total) * 100).toFixed(1) : 0
             );
-            const colors = labels.map(group => groupColors[group] || '#777');
+            const colors = groupOrder.map(group => groupColors[group] || '#777');
             
             charts.group = new Chart(ctx, {
                 type: 'bar',
