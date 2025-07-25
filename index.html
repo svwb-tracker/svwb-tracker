@@ -1396,6 +1396,7 @@
             
             matches.reverse().forEach((match, index) => {
                 const row = document.createElement('tr');
+                row.setAttribute('data-id', match.id); 
                 row.innerHTML = `
                     <td>${match.date}</td>
                     <td>${match.mode}</td>
