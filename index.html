@@ -1426,9 +1426,7 @@
             const match = matches.find(m => m.id === id);
             if (!match) return;
             
-            const row = event.target.closest('tr');
-            if (row.querySelector('.edit-form')) return; // 既に編集中の場合
-            
+            const row = document.querySelector(`tr[data-id="${id}"]`);
             const originalContent = row.innerHTML;
             
             row.innerHTML = `
@@ -1495,17 +1493,60 @@
                         </div>
                         <div class="form-row">
                             <div class="form-group">
+                                <label>現在ランク</label>
+                                <select id="edit-current-rank">
+                                    <option value="Beginner0" ${match.currentRank === 'Beginner0' ? 'selected' : ''}>Beginner0</option>
+                                    <option value="Beginner1" ${match.currentRank === 'Beginner1' ? 'selected' : ''}>Beginner1</option>
+                                    <option value="Beginner2" ${match.currentRank === 'Beginner2' ? 'selected' : ''}>Beginner2</option>
+                                    <option value="Beginner3" ${match.currentRank === 'Beginner3' ? 'selected' : ''}>Beginner3</option>
+                                    <option value="D0" ${match.currentRank === 'D0' ? 'selected' : ''}>D0</option>
+                                    <option value="D1" ${match.currentRank === 'D1' ? 'selected' : ''}>D1</option>
+                                    <option value="D2" ${match.currentRank === 'D2' ? 'selected' : ''}>D2</option>
+                                    <option value="D3" ${match.currentRank === 'D3' ? 'selected' : ''}>D3</option>
+                                    <option value="C0" ${match.currentRank === 'C0' ? 'selected' : ''}>C0</option>
+                                    <option value="C1" ${match.currentRank === 'C1' ? 'selected' : ''}>C1</option>
+                                    <option value="C2" ${match.currentRank === 'C2' ? 'selected' : ''}>C2</option>
+                                    <option value="C3" ${match.currentRank === 'C3' ? 'selected' : ''}>C3</option>
+                                    <option value="B0" ${match.currentRank === 'B0' ? 'selected' : ''}>B0</option>
+                                    <option value="B1" ${match.currentRank === 'B1' ? 'selected' : ''}>B1</option>
+                                    <option value="B2" ${match.currentRank === 'B2' ? 'selected' : ''}>B2</option>
+                                    <option value="B3" ${match.currentRank === 'B3' ? 'selected' : ''}>B3</option>
+                                    <option value="A0" ${match.currentRank === 'A0' ? 'selected' : ''}>A0</option>
+                                    <option value="A1" ${match.currentRank === 'A1' ? 'selected' : ''}>A1</option>
+                                    <option value="A2" ${match.currentRank === 'A2' ? 'selected' : ''}>A2</option>
+                                    <option value="A3" ${match.currentRank === 'A3' ? 'selected' : ''}>A3</option>
+                                    <option value="AA0" ${match.currentRank === 'AA0' ? 'selected' : ''}>AA0</option>
+                                    <option value="AA1" ${match.currentRank === 'AA1' ? 'selected' : ''}>AA1</option>
+                                    <option value="AA2" ${match.currentRank === 'AA2' ? 'selected' : ''}>AA2</option>
+                                    <option value="AA3" ${match.currentRank === 'AA3' ? 'selected' : ''}>AA3</option>
+                                    <option value="Master" ${match.currentRank === 'Master' ? 'selected' : ''}>Master</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>現在グループ</label>
+                                <select id="edit-current-group">
+                                    <option value="エメラルド" ${match.currentGroup === 'エメラルド' ? 'selected' : ''}>エメラルド</option>
+                                    <option value="トパーズ" ${match.currentGroup === 'トパーズ' ? 'selected' : ''}>トパーズ</option>
+                                    <option value="ルビー" ${match.currentGroup === 'ルビー' ? 'selected' : ''}>ルビー</option>
+                                    <option value="サファイア" ${match.currentGroup === 'サファイア' ? 'selected' : ''}>サファイア</option>
+                                    <option value="ダイヤモンド" ${match.currentGroup === 'ダイヤモンド' ? 'selected' : ''}>ダイヤモンド</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
                                 <label>メモ</label>
                                 <textarea id="edit-memo" rows="2">${match.memo || ''}</textarea>
                             </div>
                         </div>
                         <div class="form-row">
                             <div class="form-group">
-                                <button class="btn btn-success" onclick="saveMatch(${id})">
+                                <button class="btn btn-success btn-small" onclick="saveMatch(${id})">
                                     <i class="fas fa-save"></i> 保存
                                 </button>
-                                <button class="btn btn-secondary" onclick="cancelEdit()">
-                                    <i class="fas fa-times"></i> キャンセル</button>
+                                <button class="btn btn-secondary btn-small" onclick="cancelEdit()">
+                                    <i class="fas fa-times"></i> キャンセル
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -1514,6 +1555,7 @@
             
             row._originalContent = originalContent;
         }
+
 
         // 編集保存
         function saveMatch(id) {
@@ -1529,6 +1571,8 @@
                 opponentClass: document.getElementById('edit-opponent-class').value,
                 turnOrder: document.getElementById('edit-turn-order').value,
                 result: document.getElementById('edit-result').value,
+                currentRank: document.getElementById('edit-current-rank').value,
+                currentGroup: document.getElementById('edit-current-group').value, 
                 memo: document.getElementById('edit-memo').value
             };
             
