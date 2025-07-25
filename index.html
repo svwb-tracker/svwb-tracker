@@ -955,11 +955,10 @@
 
             const classOrder = ['エルフ', 'ロイヤル', 'ウィッチ', 'ドラゴン', 'ナイトメア', 'ビショップ', 'ネメシス'];
             const labels = classOrder.filter(cls => classStats[cls]);
-            const winRates = classOrder.map(cls => 
-                classStats[cls] && classStats[cls].total > 0 ? 
-                ((classStats[cls].wins / classStats[cls].total) * 100).toFixed(1) : 0
+            const winRates = labels.map(cls => 
+                ((classStats[cls].wins / classStats[cls].total) * 100).toFixed(1)
             );
-            const colors = classOrder.map(cls => classColors[cls] || '#777');
+            const colors = labels.map(cls => classColors[cls] || '#777');
             
             charts.class = new Chart(ctx, {
                 type: 'bar',
@@ -1200,11 +1199,10 @@
 
             const groupOrder = ['エメラルド', 'トパーズ', 'ルビー', 'サファイア', 'ダイヤモンド'];
             const labels = groupOrder.filter(group => groupStats[group]);
-            const winRates = groupOrder.map(group => 
-                groupStats[group] && groupStats[group].total > 0 ? 
-                ((groupStats[group].wins / groupStats[group].total) * 100).toFixed(1) : 0
+            const winRates = labels.map(group => 
+                ((groupStats[group].wins / groupStats[group].total) * 100).toFixed(1)
             );
-            const colors = groupOrder.map(group => groupColors[group] || '#777');
+            const colors = labels.map(group => groupColors[group] || '#777');
             
             charts.group = new Chart(ctx, {
                 type: 'bar',
