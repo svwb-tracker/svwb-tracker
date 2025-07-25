@@ -504,10 +504,10 @@
                         <label for="current-rank">現在ランク</label>
                         <select id="current-rank" required>
                             <option value="">選択してください</option>
-                            <option value="B0">ビギナー0</option>
-                            <option value="B1">ビギナー1</option>
-                            <option value="B2">ビギナー2</option>
-                            <option value="B3">ビギナー3</option>
+                            <option value="Beginner0">Beginner0</option>
+                            <option value="Beginner1">Beginner1</option>
+                            <option value="Beginner2">Beginner2</option>
+                            <option value="Beginner3">Beginner3</option>
                             <option value="D0">D0</option>
                             <option value="D1">D1</option>
                             <option value="D2">D2</option>
@@ -528,7 +528,7 @@
                             <option value="AA1">AA1</option>
                             <option value="AA2">AA2</option>
                             <option value="AA3">AA3</option>
-                            <option value="マスター">マスター</option>
+                            <option value="Master">Master</option>
                         </select>
                     </div>
                 </div>
@@ -742,13 +742,13 @@
 
         // ランク色設定
         const rankColors = {
-            'ビギナー': '#4CAF50',
+            'Beginner': '#4CAF50',
             'D': '#FFEB3B',
             'C': '#FF9800',
             'B': '#F44336',
             'A': '#E91E63',
             'AA': '#9C27B0',
-            'マスター': '#FFFFFF'
+            'Master': '#FFFFFF'
         };
 
         // グループ色設定
@@ -1363,13 +1363,14 @@
 
         // ランクグループ取得
         function getRankGroup(rank) {
-            if (rank.startsWith('B')) return 'ビギナー';
+            if (rank.startsWith('Beginner')) return 'Beginner';
             if (rank.startsWith('D')) return 'D';
             if (rank.startsWith('C')) return 'C';
             if (rank.startsWith('B')) return 'B';
             if (rank.startsWith('A') && !rank.startsWith('AA')) return 'A';
             if (rank.startsWith('AA')) return 'AA';
-            return 'マスター';
+            if (rank === 'Master') return 'Master';
+            return 'Master';  // デフォルト値
         }
 
         // デッキフィルター更新
