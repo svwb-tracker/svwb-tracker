@@ -1987,6 +1987,51 @@
                 }
             }
         }
+
+        // 編集フォームの送信処理
+        document.getElementById('edit-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            if (!currentEditId) return;
+            
+            const updatedMatch = {
+                id: currentEditId,
+                date: document.getElementById('edit-date').value,
+                mode: document.getElementById('edit-mode').value,
+                myClass: document.getElementById('edit-my-class').value,
+                deckName: document.getElementById('edit-deck-name').value,
+                opponentClass: document.getElementById('edit-opponent-class').value,
+                turnOrder: document.getElementById('edit-turn-order').value,
+                result: document.getElementById('edit-result').value,
+                currentRank: document.getElementById('edit-current-rank').value,
+                currentGroup: document.getElementById('edit-current-group').value,
+                memo: document.getElementById('edit-memo').value
+            };
+            
+            // 配列内の該当データを更新
+            const index = matches.findIndex(m => m.id === currentEditId);
+            if (index !== -1) {
+                matches[index] = updatedMatch;
+                localStorage.setItem('shadowverse-matches', JSON.stringify(matches));
+                
+                // 表示を更新
+                displayHistory();
+                updateStats();
+                updateDeckFilter();
+                
+                // モーダルを閉じる
+                closeEditModal();
+            }
+        });
+
+        // モーダル外クリックで閉じる
+        document.getElementById('edit-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeEditModal();
+            }
+        });
+
+    
     </script>
 </body>
 </html>
