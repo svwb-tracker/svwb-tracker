@@ -1417,8 +1417,8 @@
             
             const turnOrder = ['先行', '後攻'];
             const labels = turnOrder.filter(turn => turnStats[turn]);
-            const winRates = turnOrder.map(turn => 
-                turnStats[turn] && turnStats[turn].total > 0 ? 
+            const winRates = labels.map(turn => 
+                turnStats[turn].total > 0 ? 
                 ((turnStats[turn].wins / turnStats[turn].total) * 100).toFixed(1) : 0
             );
             
@@ -1429,8 +1429,8 @@
                     datasets: [{
                         label: '勝率 (%)',
                         data: winRates,
-                        backgroundColor: ['#00bcd4', '#e91e63'],
-                        borderColor: ['#0097a7', '#c2185b'],
+                        backgroundColor: ['#4a9eff', '#ff9800'],
+                        borderColor: ['#2196f3', '#f57c00'],
                         borderWidth: 2
                     }]
                 },
@@ -1440,6 +1440,28 @@
                     plugins: {
                         legend: {
                             labels: { color: '#e0e0e0' }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(45, 45, 45, 0.9)',
+                            titleColor: '#e0e0e0',
+                            bodyColor: '#e0e0e0',
+                            borderColor: '#4a9eff',
+                            borderWidth: 1,
+                            callbacks: {
+                                title: function(context) {
+                                    return `${context[0].label} の戦績`;
+                                },
+                                label: function(context) {
+                                    const turnType = labels[context.dataIndex];
+                                    const stats = turnStats[turnType];
+                                    const losses = stats.total - stats.wins;
+                                    return [
+                                        `勝率: ${context.parsed.y}%`,
+                                        `戦績: ${stats.wins}勝${losses}敗`,
+                                        `総対戦数: ${stats.total}戦`
+                                    ];
+                                }
+                            }
                         }
                     },
                     scales: {
@@ -1456,6 +1478,7 @@
                 }
             });
         }
+
 
         // グループ別統計
         function updateGroupStats(data) {
