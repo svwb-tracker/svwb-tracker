@@ -661,16 +661,9 @@
             <div class="filter-container">
                 <div class="filter-row">
                     <div class="form-group">
-                        <label for="filter-class">クラス</label>
-                        <select id="filter-class" onchange="filterHistory()">
+                        <label for="filter-deck">デッキ</label>
+                        <select id="filter-deck" onchange="filterHistory()">
                             <option value="">全て</option>
-                            <option value="エルフ">エルフ</option>
-                            <option value="ロイヤル">ロイヤル</option>
-                            <option value="ウィッチ">ウィッチ</option>
-                            <option value="ドラゴン">ドラゴン</option>
-                            <option value="ナイトメア">ナイトメア</option>
-                            <option value="ビショップ">ビショップ</option>
-                            <option value="ネメシス">ネメシス</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -688,7 +681,7 @@
                     </div>
                 </div>
             </div>
-
+        
             <div class="table-container">
                 <table class="data-table" id="history-table">
                     <thead>
@@ -1474,9 +1467,19 @@
             const tbody = document.getElementById('history-body');
             tbody.innerHTML = '';
             
-            matches.reverse().forEach((match, index) => {
+            // デッキフィルターオプションを更新
+            updateDeckFilterOptions();
+            
+            // 日付の新しい順にソート
+            const sortedMatches = matches.sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            sortedMatches.forEach(match => {
                 const row = document.createElement('tr');
-                row.setAttribute('data-id', match.id); 
+                
+                const memoDisplay = match.memo ? 
+                    `<span class="memo-tooltip" data-memo="${match.memo}">${match.memo.substring(0, 20)}${match.memo.length > 20 ? '...' : ''}</span>` :
+                    '';
+                
                 row.innerHTML = `
                     <td>${match.date}</td>
                     <td>${match.mode}</td>
@@ -1487,7 +1490,7 @@
                     <td style="color: ${match.result === '勝利' ? '#4caf50' : '#f44336'}">${match.result}</td>
                     <td>${match.currentRank}</td>
                     <td>${match.currentGroup}</td>
-                    <td class="memo-cell memo-tooltip" data-memo="${match.memo || ''}">${match.memo || ''}</td>
+                    <td class="memo-cell">${memoDisplay}</td>
                     <td class="action-buttons">
                         <button class="btn btn-small btn-warning" onclick="editMatch(${match.id})">
                             <i class="fas fa-edit"></i>
@@ -1497,10 +1500,72 @@
                         </button>
                     </td>
                 `;
+                
                 tbody.appendChild(row);
             });
-            matches.reverse(); // 元の順序に戻す
         }
+
+        // デッキフィルターオプションを更新
+        function updateDeckFilterOptions() {
+            const deckFilter = document.getElementById('filter-deck');
+            
+            // 既存のオプションをクリア（最初の「全て」オプション以外）
+            while (deckFilter.children.length > 1) {
+                deckFilter.removeChild(deckFilter.lastChild);
+            }
+            
+            // ユニークなデッキ名を取得
+            const uniqueDecks = [...new Set(matches.map(match => match.deckName))].sort();
+            
+            // デッキフィルターにオプションを追加
+            uniqueDecks.forEach(deckName => {
+                const option = document.createElement('option');
+                option.value = deckName;
+                option.textContent = deckName;
+                deckFilter.appendChild(option);
+            });
+        }
+        
+        // フィルタリングされた戦績を表示
+        function displayFilteredHistory(filteredMatches) {
+            const tbody = document.getElementById('history-body');
+            tbody.innerHTML = '';
+            
+            // 日付の新しい順にソート
+            const sortedMatches = filteredMatches.sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            sortedMatches.forEach(match => {
+                const row = document.createElement('tr');
+                
+                const memoDisplay = match.memo ? 
+                    `<span class="memo-tooltip" data-memo="${match.memo}">${match.memo.substring(0, 20)}${match.memo.length > 20 ? '...' : ''}</span>` :
+                    '';
+                
+                row.innerHTML = `
+                    <td>${match.date}</td>
+                    <td>${match.mode}</td>
+                    <td style="color: ${classColors[match.myClass] || '#e0e0e0'}">${match.myClass}</td>
+                    <td>${match.deckName}</td>
+                    <td style="color: ${classColors[match.opponentClass] || '#e0e0e0'}">${match.opponentClass}</td>
+                    <td>${match.turnOrder}</td>
+                    <td style="color: ${match.result === '勝利' ? '#4caf50' : '#f44336'}">${match.result}</td>
+                    <td>${match.currentRank}</td>
+                    <td>${match.currentGroup}</td>
+                    <td class="memo-cell">${memoDisplay}</td>
+                    <td class="action-buttons">
+                        <button class="btn btn-small btn-warning" onclick="editMatch(${match.id})">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-small btn-danger" onclick="deleteMatch(${match.id})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                
+                tbody.appendChild(row);
+            });
+        }
+        
 
         // 戦績編集
         function editMatch(id) {
@@ -1682,33 +1747,31 @@
             }
         }
 
-        // フィルター
+        // 戦績フィルタリング機能
         function filterHistory() {
-            const classFilter = document.getElementById('filter-class').value;
+            const deckFilter = document.getElementById('filter-deck').value;
             const resultFilter = document.getElementById('filter-result').value;
             
-            const tbody = document.getElementById('history-body');
-            const rows = tbody.querySelectorAll('tr');
+            let filteredMatches = matches;
             
-            rows.forEach(row => {
-                const cells = row.querySelectorAll('td');
-                if (cells.length === 0) return;
-                
-                const matchClass = cells[2].textContent;
-                const matchResult = cells[6].textContent;
-                
-                const showClass = !classFilter || matchClass === classFilter;
-                const showResult = !resultFilter || matchResult === resultFilter;
-                
-                row.style.display = (showClass && showResult) ? '' : 'none';
-            });
+            // デッキでフィルタリング
+            if (deckFilter) {
+                filteredMatches = filteredMatches.filter(match => match.deckName === deckFilter);
+            }
+            
+            // 結果でフィルタリング
+            if (resultFilter) {
+                filteredMatches = filteredMatches.filter(match => match.result === resultFilter);
+            }
+            
+            displayFilteredHistory(filteredMatches);
         }
 
         // フィルタークリア
         function clearFilters() {
-            document.getElementById('filter-class').value = '';
+            document.getElementById('filter-deck').value = '';
             document.getElementById('filter-result').value = '';
-            filterHistory();
+            displayHistory();
         }
 
         // データエクスポート
