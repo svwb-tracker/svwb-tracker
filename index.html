@@ -286,17 +286,8 @@
             gap: 10px;
         }
 
-        .ad-space {
-            background: #2d2d2d;
-            border: 2px dashed #555;
-            border-radius: 8px;
-            padding: 20px;
-            text-align: center;
-            margin-top: 30px;
-            color: #a0a0a0;
-        }
 
-                .content-intro {
+        .content-intro {
             background: linear-gradient(135deg, #3a3a3a 0%, #4a4a4a 100%);
             padding: 30px;
             border-radius: 15px;
@@ -1476,6 +1467,8 @@
             sortedMatches.forEach(match => {
                 const row = document.createElement('tr');
                 
+                row.setAttribute('data-id', match.id);
+                
                 const memoDisplay = match.memo ? 
                     `<span class="memo-tooltip" data-memo="${match.memo}">${match.memo.substring(0, 20)}${match.memo.length > 20 ? '...' : ''}</span>` :
                     '';
@@ -1537,6 +1530,9 @@
             sortedMatches.forEach(match => {
                 const row = document.createElement('tr');
                 
+                // ★重要：data-id属性を追加
+                row.setAttribute('data-id', match.id);
+                
                 const memoDisplay = match.memo ? 
                     `<span class="memo-tooltip" data-memo="${match.memo}">${match.memo.substring(0, 20)}${match.memo.length > 20 ? '...' : ''}</span>` :
                     '';
@@ -1565,182 +1561,123 @@
                 tbody.appendChild(row);
             });
         }
-        
 
-        // 戦績編集
+        // 戦績編集機能
         function editMatch(id) {
+            const row = document.querySelector(`tr[data-id="${id}"]`);
+            if (!row) return;
+            
             const match = matches.find(m => m.id === id);
             if (!match) return;
             
-            const row = document.querySelector(`tr[data-id="${id}"]`);
-            const originalContent = row.innerHTML;
+            // 元の内容を保存
+            row._originalContent = row.innerHTML;
             
+            // 編集フォームを作成
             row.innerHTML = `
-                <td colspan="11">
-                    <div class="edit-form">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>日付</label>
-                                <input type="date" id="edit-date" value="${match.date}">
-                            </div>
-                            <div class="form-group">
-                                <label>モード</label>
-                                <select id="edit-mode">
-                                    <option value="ランクマッチ" ${match.mode === 'ランクマッチ' ? 'selected' : ''}>ランクマッチ</option>
-                                    <option value="フリーマッチ" ${match.mode === 'フリーマッチ' ? 'selected' : ''}>フリーマッチ</option>
-                                    <option value="グランプリ" ${match.mode === 'グランプリ' ? 'selected' : ''}>グランプリ</option>
-                                    <option value="ルームマッチ" ${match.mode === 'ルームマッチ' ? 'selected' : ''}>ルームマッチ</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>使用クラス</label>
-                                <select id="edit-my-class">
-                                    <option value="エルフ" ${match.myClass === 'エルフ' ? 'selected' : ''}>エルフ</option>
-                                    <option value="ロイヤル" ${match.myClass === 'ロイヤル' ? 'selected' : ''}>ロイヤル</option>
-                                    <option value="ウィッチ" ${match.myClass === 'ウィッチ' ? 'selected' : ''}>ウィッチ</option>
-                                    <option value="ドラゴン" ${match.myClass === 'ドラゴン' ? 'selected' : ''}>ドラゴン</option>
-                                    <option value="ナイトメア" ${match.myClass === 'ナイトメア' ? 'selected' : ''}>ナイトメア</option>
-                                    <option value="ビショップ" ${match.myClass === 'ビショップ' ? 'selected' : ''}>ビショップ</option>
-                                    <option value="ネメシス" ${match.myClass === 'ネメシス' ? 'selected' : ''}>ネメシス</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>デッキ名</label>
-                                <input type="text" id="edit-deck-name" value="${match.deckName}">
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>相手クラス</label>
-                                <select id="edit-opponent-class">
-                                    <option value="エルフ" ${match.opponentClass === 'エルフ' ? 'selected' : ''}>エルフ</option>
-                                    <option value="ロイヤル" ${match.opponentClass === 'ロイヤル' ? 'selected' : ''}>ロイヤル</option>
-                                    <option value="ウィッチ" ${match.opponentClass === 'ウィッチ' ? 'selected' : ''}>ウィッチ</option>
-                                    <option value="ドラゴン" ${match.opponentClass === 'ドラゴン' ? 'selected' : ''}>ドラゴン</option>
-                                    <option value="ナイトメア" ${match.opponentClass === 'ナイトメア' ? 'selected' : ''}>ナイトメア</option>
-                                    <option value="ビショップ" ${match.opponentClass === 'ビショップ' ? 'selected' : ''}>ビショップ</option>
-                                    <option value="ネメシス" ${match.opponentClass === 'ネメシス' ? 'selected' : ''}>ネメシス</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>先行/後攻</label>
-                                <select id="edit-turn-order">
-                                    <option value="先行" ${match.turnOrder === '先行' ? 'selected' : ''}>先行</option>
-                                    <option value="後攻" ${match.turnOrder === '後攻' ? 'selected' : ''}>後攻</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>勝敗</label>
-                                <select id="edit-result">
-                                    <option value="勝利" ${match.result === '勝利' ? 'selected' : ''}>勝利</option>
-                                    <option value="敗北" ${match.result === '敗北' ? 'selected' : ''}>敗北</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>現在ランク</label>
-                                <select id="edit-current-rank">
-                                    <option value="Beginner0" ${match.currentRank === 'Beginner0' ? 'selected' : ''}>Beginner0</option>
-                                    <option value="Beginner1" ${match.currentRank === 'Beginner1' ? 'selected' : ''}>Beginner1</option>
-                                    <option value="Beginner2" ${match.currentRank === 'Beginner2' ? 'selected' : ''}>Beginner2</option>
-                                    <option value="Beginner3" ${match.currentRank === 'Beginner3' ? 'selected' : ''}>Beginner3</option>
-                                    <option value="D0" ${match.currentRank === 'D0' ? 'selected' : ''}>D0</option>
-                                    <option value="D1" ${match.currentRank === 'D1' ? 'selected' : ''}>D1</option>
-                                    <option value="D2" ${match.currentRank === 'D2' ? 'selected' : ''}>D2</option>
-                                    <option value="D3" ${match.currentRank === 'D3' ? 'selected' : ''}>D3</option>
-                                    <option value="C0" ${match.currentRank === 'C0' ? 'selected' : ''}>C0</option>
-                                    <option value="C1" ${match.currentRank === 'C1' ? 'selected' : ''}>C1</option>
-                                    <option value="C2" ${match.currentRank === 'C2' ? 'selected' : ''}>C2</option>
-                                    <option value="C3" ${match.currentRank === 'C3' ? 'selected' : ''}>C3</option>
-                                    <option value="B0" ${match.currentRank === 'B0' ? 'selected' : ''}>B0</option>
-                                    <option value="B1" ${match.currentRank === 'B1' ? 'selected' : ''}>B1</option>
-                                    <option value="B2" ${match.currentRank === 'B2' ? 'selected' : ''}>B2</option>
-                                    <option value="B3" ${match.currentRank === 'B3' ? 'selected' : ''}>B3</option>
-                                    <option value="A0" ${match.currentRank === 'A0' ? 'selected' : ''}>A0</option>
-                                    <option value="A1" ${match.currentRank === 'A1' ? 'selected' : ''}>A1</option>
-                                    <option value="A2" ${match.currentRank === 'A2' ? 'selected' : ''}>A2</option>
-                                    <option value="A3" ${match.currentRank === 'A3' ? 'selected' : ''}>A3</option>
-                                    <option value="AA0" ${match.currentRank === 'AA0' ? 'selected' : ''}>AA0</option>
-                                    <option value="AA1" ${match.currentRank === 'AA1' ? 'selected' : ''}>AA1</option>
-                                    <option value="AA2" ${match.currentRank === 'AA2' ? 'selected' : ''}>AA2</option>
-                                    <option value="AA3" ${match.currentRank === 'AA3' ? 'selected' : ''}>AA3</option>
-                                    <option value="Master" ${match.currentRank === 'Master' ? 'selected' : ''}>Master</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>現在グループ</label>
-                                <select id="edit-current-group">
-                                    <option value="エメラルド" ${match.currentGroup === 'エメラルド' ? 'selected' : ''}>エメラルド</option>
-                                    <option value="トパーズ" ${match.currentGroup === 'トパーズ' ? 'selected' : ''}>トパーズ</option>
-                                    <option value="ルビー" ${match.currentGroup === 'ルビー' ? 'selected' : ''}>ルビー</option>
-                                    <option value="サファイア" ${match.currentGroup === 'サファイア' ? 'selected' : ''}>サファイア</option>
-                                    <option value="ダイヤモンド" ${match.currentGroup === 'ダイヤモンド' ? 'selected' : ''}>ダイヤモンド</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>メモ</label>
-                                <textarea id="edit-memo" rows="2">${match.memo || ''}</textarea>
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <button class="btn btn-success btn-small" onclick="saveMatch(${id})">
-                                    <i class="fas fa-save"></i> 保存
-                                </button>
-                                <button class="btn btn-secondary btn-small" onclick="cancelEdit()">
-                                    <i class="fas fa-times"></i> キャンセル
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                <td><input type="date" value="${match.date}" id="edit-date-${id}"></td>
+                <td>
+                    <select id="edit-mode-${id}">
+                        <option value="ランクマッチ" ${match.mode === 'ランクマッチ' ? 'selected' : ''}>ランクマッチ</option>
+                        <option value="フリーマッチ" ${match.mode === 'フリーマッチ' ? 'selected' : ''}>フリーマッチ</option>
+                        <option value="グランプリ" ${match.mode === 'グランプリ' ? 'selected' : ''}>グランプリ</option>
+                        <option value="ルームマッチ" ${match.mode === 'ルームマッチ' ? 'selected' : ''}>ルームマッチ</option>
+                    </select>
+                </td>
+                <td>
+                    <select id="edit-myclass-${id}">
+                        <option value="エルフ" ${match.myClass === 'エルフ' ? 'selected' : ''}>エルフ</option>
+                        <option value="ロイヤル" ${match.myClass === 'ロイヤル' ? 'selected' : ''}>ロイヤル</option>
+                        <option value="ウィッチ" ${match.myClass === 'ウィッチ' ? 'selected' : ''}>ウィッチ</option>
+                        <option value="ドラゴン" ${match.myClass === 'ドラゴン' ? 'selected' : ''}>ドラゴン</option>
+                        <option value="ナイトメア" ${match.myClass === 'ナイトメア' ? 'selected' : ''}>ナイトメア</option>
+                        <option value="ビショップ" ${match.myClass === 'ビショップ' ? 'selected' : ''}>ビショップ</option>
+                        <option value="ネメシス" ${match.myClass === 'ネメシス' ? 'selected' : ''}>ネメシス</option>
+                    </select>
+                </td>
+                <td><input type="text" value="${match.deckName}" id="edit-deck-${id}"></td>
+                <td>
+                    <select id="edit-opponent-${id}">
+                        <option value="エルフ" ${match.opponentClass === 'エルフ' ? 'selected' : ''}>エルフ</option>
+                        <option value="ロイヤル" ${match.opponentClass === 'ロイヤル' ? 'selected' : ''}>ロイヤル</option>
+                        <option value="ウィッチ" ${match.opponentClass === 'ウィッチ' ? 'selected' : ''}>ウィッチ</option>
+                        <option value="ドラゴン" ${match.opponentClass === 'ドラゴン' ? 'selected' : ''}>ドラゴン</option>
+                        <option value="ナイトメア" ${match.opponentClass === 'ナイトメア' ? 'selected' : ''}>ナイトメア</option>
+                        <option value="ビショップ" ${match.opponentClass === 'ビショップ' ? 'selected' : ''}>ビショップ</option>
+                        <option value="ネメシス" ${match.opponentClass === 'ネメシス' ? 'selected' : ''}>ネメシス</option>
+                    </select>
+                </td>
+                <td>
+                    <select id="edit-turn-${id}">
+                        <option value="先行" ${match.turnOrder === '先行' ? 'selected' : ''}>先行</option>
+                        <option value="後攻" ${match.turnOrder === '後攻' ? 'selected' : ''}>後攻</option>
+                    </select>
+                </td>
+                <td>
+                    <select id="edit-result-${id}">
+                        <option value="勝利" ${match.result === '勝利' ? 'selected' : ''}>勝利</option>
+                        <option value="敗北" ${match.result === '敗北' ? 'selected' : ''}>敗北</option>
+                    </select>
+                </td>
+                <td><input type="text" value="${match.currentRank}" id="edit-rank-${id}"></td>
+                <td><input type="text" value="${match.currentGroup}" id="edit-group-${id}"></td>
+                <td><input type="text" value="${match.memo || ''}" id="edit-memo-${id}"></td>
+                <td class="action-buttons">
+                    <button class="btn btn-small btn-success" onclick="saveMatch(${id})">
+                        <i class="fas fa-save"></i>
+                    </button>
+                    <button class="btn btn-small btn-secondary" onclick="cancelEdit(${id})">
+                        <i class="fas fa-times"></i>
+                    </button>
                 </td>
             `;
-            
-            row._originalContent = originalContent;
         }
-
-
-        // 編集保存
+        
+        // 編集内容を保存
         function saveMatch(id) {
-            const matchIndex = matches.findIndex(m => m.id === id);
-            if (matchIndex === -1) return;
-            
-            matches[matchIndex] = {
-                ...matches[matchIndex],
-                date: document.getElementById('edit-date').value,
-                mode: document.getElementById('edit-mode').value,
-                myClass: document.getElementById('edit-my-class').value,
-                deckName: document.getElementById('edit-deck-name').value,
-                opponentClass: document.getElementById('edit-opponent-class').value,
-                turnOrder: document.getElementById('edit-turn-order').value,
-                result: document.getElementById('edit-result').value,
-                currentRank: document.getElementById('edit-current-rank').value,
-                currentGroup: document.getElementById('edit-current-group').value, 
-                memo: document.getElementById('edit-memo').value
+            const updatedMatch = {
+                id: id,
+                date: document.getElementById(`edit-date-${id}`).value,
+                mode: document.getElementById(`edit-mode-${id}`).value,
+                myClass: document.getElementById(`edit-myclass-${id}`).value,
+                deckName: document.getElementById(`edit-deck-${id}`).value,
+                opponentClass: document.getElementById(`edit-opponent-${id}`).value,
+                turnOrder: document.getElementById(`edit-turn-${id}`).value,
+                result: document.getElementById(`edit-result-${id}`).value,
+                currentRank: document.getElementById(`edit-rank-${id}`).value,
+                currentGroup: document.getElementById(`edit-group-${id}`).value,
+                memo: document.getElementById(`edit-memo-${id}`).value
             };
             
-            localStorage.setItem('shadowverse-matches', JSON.stringify(matches));
-            displayHistory();
-            updateStats();
-            updateDeckFilter();
-        }
-
-        // 編集キャンセル
-        function cancelEdit() {
-            const row = event.target.closest('tr');
-            if (row._originalContent) {
-                row.innerHTML = row._originalContent;
+            // 配列内の該当データを更新
+            const index = matches.findIndex(m => m.id === id);
+            if (index !== -1) {
+                matches[index] = updatedMatch;
+                localStorage.setItem('shadowverse-matches', JSON.stringify(matches));
+                
+                // 表示を更新
+                displayHistory();
+                updateStats();
+                updateDeckFilter();
             }
         }
-
-        // 戦績削除
+        
+        // 編集をキャンセル
+        function cancelEdit(id) {
+            const row = document.querySelector(`tr[data-id="${id}"]`);
+            if (row && row._originalContent) {
+                row.innerHTML = row._originalContent;
+                delete row._originalContent;
+            }
+        }
+        
+        // 戦績削除機能
         function deleteMatch(id) {
             if (confirm('この戦績を削除しますか？')) {
                 matches = matches.filter(m => m.id !== id);
                 localStorage.setItem('shadowverse-matches', JSON.stringify(matches));
+                
+                // 表示を更新
                 displayHistory();
                 updateStats();
                 updateDeckFilter();
