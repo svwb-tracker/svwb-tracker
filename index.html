@@ -1538,7 +1538,8 @@
                 }
             });
             
-            const labels = Object.keys(rankStats);
+            const preferredOrder = ['Beginner', 'D', 'C', 'B', 'A', 'AA', 'Master'];
+            const labels = preferredOrder.filter(rank => rankStats[rank]);
             const winRates = labels.map(rank => 
                 rankStats[rank].total > 0 ? 
                 ((rankStats[rank].wins / rankStats[rank].total) * 100).toFixed(1) : 0
