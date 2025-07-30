@@ -1079,8 +1079,7 @@
                 ((opponentStats[cls].wins / opponentStats[cls].total) * 100).toFixed(1)
             );
             const colors = labels.map(cls => classColors[cls] || '#777');
-
-            
+        
             charts.opponent = new Chart(ctx, {
                 type: 'bar',
                 data: {
@@ -1099,6 +1098,28 @@
                     plugins: {
                         legend: {
                             labels: { color: '#e0e0e0' }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(45, 45, 45, 0.9)',
+                            titleColor: '#e0e0e0',
+                            bodyColor: '#e0e0e0',
+                            borderColor: '#4a9eff',
+                            borderWidth: 1,
+                            callbacks: {
+                                title: function(context) {
+                                    return `${context[0].label} との対戦`;
+                                },
+                                label: function(context) {
+                                    const className = labels[context.dataIndex];
+                                    const stats = opponentStats[className];
+                                    const losses = stats.total - stats.wins;
+                                    return [
+                                        `勝率: ${context.parsed.y}%`,
+                                        `戦績: ${stats.wins}勝${losses}敗`,
+                                        `総対戦数: ${stats.total}戦`
+                                    ];
+                                }
+                            }
                         }
                     },
                     scales: {
