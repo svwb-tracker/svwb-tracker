@@ -425,6 +425,84 @@
             margin-bottom: 20px;
             display: none;
         }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .modal-content {
+            background: linear-gradient(135deg, #3a3a3a 0%, #4a4a4a 100%);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #555;
+        }
+        
+        .modal-header h3 {
+            color: #4a9eff;
+            margin: 0;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            color: #e0e0e0;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 5px;
+        }
+        
+        .modal-close:hover {
+            color: #4a9eff;
+        }
+        
+        .modal-form .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #555;
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #6c757d 0%, #868e96 100%);
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(108, 117, 125, 0.3);
+        }
+        
     </style>
 </head>
 <body>
@@ -765,6 +843,143 @@
                 </a>
             </div>
         </div>
+
+        <!-- 編集モーダル -->
+        <div class="modal-overlay" id="edit-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3><i class="fas fa-edit"></i> 戦績編集</h3>
+                    <button class="modal-close" onclick="closeEditModal()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <form class="modal-form" id="edit-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="edit-date">日付</label>
+                            <input type="date" id="edit-date" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-mode">対戦モード</label>
+                            <select id="edit-mode" required>
+                                <option value="ランクマッチ">ランクマッチ</option>
+                                <option value="フリーマッチ">フリーマッチ</option>
+                                <option value="グランプリ">グランプリ</option>
+                                <option value="ルームマッチ">ルームマッチ</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="edit-my-class">使用クラス</label>
+                            <select id="edit-my-class" required>
+                                <option value="エルフ">エルフ</option>
+                                <option value="ロイヤル">ロイヤル</option>
+                                <option value="ウィッチ">ウィッチ</option>
+                                <option value="ドラゴン">ドラゴン</option>
+                                <option value="ナイトメア">ナイトメア</option>
+                                <option value="ビショップ">ビショップ</option>
+                                <option value="ネメシス">ネメシス</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-deck-name">デッキ名</label>
+                            <input type="text" id="edit-deck-name" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="edit-opponent-class">対戦相手クラス</label>
+                            <select id="edit-opponent-class" required>
+                                <option value="エルフ">エルフ</option>
+                                <option value="ロイヤル">ロイヤル</option>
+                                <option value="ウィッチ">ウィッチ</option>
+                                <option value="ドラゴン">ドラゴン</option>
+                                <option value="ナイトメア">ナイトメア</option>
+                                <option value="ビショップ">ビショップ</option>
+                                <option value="ネメシス">ネメシス</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-turn-order">先行/後攻</label>
+                            <select id="edit-turn-order" required>
+                                <option value="先行">先行</option>
+                                <option value="後攻">後攻</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="edit-result">勝敗</label>
+                            <select id="edit-result" required>
+                                <option value="勝利">勝利</option>
+                                <option value="敗北">敗北</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-current-rank">現在ランク</label>
+                            <select id="edit-current-rank" required>
+                                <option value="Beginner0">Beginner0</option>
+                                <option value="Beginner1">Beginner1</option>
+                                <option value="Beginner2">Beginner2</option>
+                                <option value="Beginner3">Beginner3</option>
+                                <option value="D0">D0</option>
+                                <option value="D1">D1</option>
+                                <option value="D2">D2</option>
+                                <option value="D3">D3</option>
+                                <option value="C0">C0</option>
+                                <option value="C1">C1</option>
+                                <option value="C2">C2</option>
+                                <option value="B0">B0</option>
+                                <option value="B1">B1</option>
+                                <option value="B2">B2</option>
+                                <option value="B3">B3</option>
+                                <option value="A0">A0</option>
+                                <option value="A1">A1</option>
+                                <option value="A2">A2</option>
+                                <option value="A3">A3</option>
+                                <option value="AA0">AA0</option>
+                                <option value="AA1">AA1</option>
+                                <option value="AA2">AA2</option>
+                                <option value="AA3">AA3</option>
+                                <option value="Master">Master</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="edit-current-group">現在グループ</label>
+                            <select id="edit-current-group" required>
+                                <option value="エメラルド">エメラルド</option>
+                                <option value="トパーズ">トパーズ</option>
+                                <option value="ルビー">ルビー</option>
+                                <option value="サファイア">サファイア</option>
+                                <option value="ダイヤモンド">ダイヤモンド</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="edit-memo">メモ</label>
+                        <textarea id="edit-memo" rows="3"></textarea>
+                    </div>
+                    
+                    <div class="modal-buttons">
+                        <button type="button" class="btn btn-secondary" onclick="closeEditModal()">
+                            <i class="fas fa-times"></i> キャンセル
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> 保存
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
     </div>
 
     <script>
@@ -1562,76 +1777,38 @@
             });
         }
 
-        // 戦績編集機能
+        // 現在編集中の戦績ID
+        let currentEditId = null;
+
+        // モーダル編集フォームを開く
         function editMatch(id) {
-            const row = document.querySelector(`tr[data-id="${id}"]`);
-            if (!row) return;
-            
             const match = matches.find(m => m.id === id);
             if (!match) return;
             
-            // 元の内容を保存
-            row._originalContent = row.innerHTML;
+            currentEditId = id;
             
-            // 編集フォームを作成
-            row.innerHTML = `
-                <td><input type="date" value="${match.date}" id="edit-date-${id}"></td>
-                <td>
-                    <select id="edit-mode-${id}">
-                        <option value="ランクマッチ" ${match.mode === 'ランクマッチ' ? 'selected' : ''}>ランクマッチ</option>
-                        <option value="フリーマッチ" ${match.mode === 'フリーマッチ' ? 'selected' : ''}>フリーマッチ</option>
-                        <option value="グランプリ" ${match.mode === 'グランプリ' ? 'selected' : ''}>グランプリ</option>
-                        <option value="ルームマッチ" ${match.mode === 'ルームマッチ' ? 'selected' : ''}>ルームマッチ</option>
-                    </select>
-                </td>
-                <td>
-                    <select id="edit-myclass-${id}">
-                        <option value="エルフ" ${match.myClass === 'エルフ' ? 'selected' : ''}>エルフ</option>
-                        <option value="ロイヤル" ${match.myClass === 'ロイヤル' ? 'selected' : ''}>ロイヤル</option>
-                        <option value="ウィッチ" ${match.myClass === 'ウィッチ' ? 'selected' : ''}>ウィッチ</option>
-                        <option value="ドラゴン" ${match.myClass === 'ドラゴン' ? 'selected' : ''}>ドラゴン</option>
-                        <option value="ナイトメア" ${match.myClass === 'ナイトメア' ? 'selected' : ''}>ナイトメア</option>
-                        <option value="ビショップ" ${match.myClass === 'ビショップ' ? 'selected' : ''}>ビショップ</option>
-                        <option value="ネメシス" ${match.myClass === 'ネメシス' ? 'selected' : ''}>ネメシス</option>
-                    </select>
-                </td>
-                <td><input type="text" value="${match.deckName}" id="edit-deck-${id}"></td>
-                <td>
-                    <select id="edit-opponent-${id}">
-                        <option value="エルフ" ${match.opponentClass === 'エルフ' ? 'selected' : ''}>エルフ</option>
-                        <option value="ロイヤル" ${match.opponentClass === 'ロイヤル' ? 'selected' : ''}>ロイヤル</option>
-                        <option value="ウィッチ" ${match.opponentClass === 'ウィッチ' ? 'selected' : ''}>ウィッチ</option>
-                        <option value="ドラゴン" ${match.opponentClass === 'ドラゴン' ? 'selected' : ''}>ドラゴン</option>
-                        <option value="ナイトメア" ${match.opponentClass === 'ナイトメア' ? 'selected' : ''}>ナイトメア</option>
-                        <option value="ビショップ" ${match.opponentClass === 'ビショップ' ? 'selected' : ''}>ビショップ</option>
-                        <option value="ネメシス" ${match.opponentClass === 'ネメシス' ? 'selected' : ''}>ネメシス</option>
-                    </select>
-                </td>
-                <td>
-                    <select id="edit-turn-${id}">
-                        <option value="先行" ${match.turnOrder === '先行' ? 'selected' : ''}>先行</option>
-                        <option value="後攻" ${match.turnOrder === '後攻' ? 'selected' : ''}>後攻</option>
-                    </select>
-                </td>
-                <td>
-                    <select id="edit-result-${id}">
-                        <option value="勝利" ${match.result === '勝利' ? 'selected' : ''}>勝利</option>
-                        <option value="敗北" ${match.result === '敗北' ? 'selected' : ''}>敗北</option>
-                    </select>
-                </td>
-                <td><input type="text" value="${match.currentRank}" id="edit-rank-${id}"></td>
-                <td><input type="text" value="${match.currentGroup}" id="edit-group-${id}"></td>
-                <td><input type="text" value="${match.memo || ''}" id="edit-memo-${id}"></td>
-                <td class="action-buttons">
-                    <button class="btn btn-small btn-success" onclick="saveMatch(${id})">
-                        <i class="fas fa-save"></i>
-                    </button>
-                    <button class="btn btn-small btn-secondary" onclick="cancelEdit(${id})">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </td>
-            `;
+            // フォームに値を設定
+            document.getElementById('edit-date').value = match.date;
+            document.getElementById('edit-mode').value = match.mode;
+            document.getElementById('edit-my-class').value = match.myClass;
+            document.getElementById('edit-deck-name').value = match.deckName;
+            document.getElementById('edit-opponent-class').value = match.opponentClass;
+            document.getElementById('edit-turn-order').value = match.turnOrder;
+            document.getElementById('edit-result').value = match.result;
+            document.getElementById('edit-current-rank').value = match.currentRank;
+            document.getElementById('edit-current-group').value = match.currentGroup;
+            document.getElementById('edit-memo').value = match.memo || '';
+            
+            // モーダルを表示
+            document.getElementById('edit-modal').style.display = 'flex';
         }
+
+        // モーダルを閉じる
+        function closeEditModal() {
+            document.getElementById('edit-modal').style.display = 'none';
+            currentEditId = null;
+        }
+
         
         // 編集内容を保存
         function saveMatch(id) {
