@@ -984,10 +984,8 @@
 
     <script>
         // グローバル変数
-        let matches = [];
+        let matches = JSON.parse(localStorage.getItem('shadowverse-matches') || '[]');
         let charts = {};
-        let isElectron = typeof window.electronAPI !== 'undefined';
-        let autoSyncEnabled = true;
 
         // クラス色設定
         const classColors = {
@@ -1021,18 +1019,12 @@
         };
 
         // 初期化
-        document.addEventListener('DOMContentLoaded', async function() {
-            await loadMatches(); // データを読み込み
+        document.addEventListener('DOMContentLoaded', function() {
             initializeForm();
-            await loadSavedValues();
+            loadSavedValues();
             updateStats();
             updateDeckFilter();
             displayHistory();
-            
-            // Electronイベントリスナー設定
-            if (isElectron) {
-                setupElectronListeners();
-            }
         });
 
         // タブ切り替え
@@ -1056,51 +1048,9 @@
             document.getElementById('mode').value = 'ランクマッチ';
         }
 
-        // データ読み込み（Electron対応）
-        async function loadMatches() {
-            if (isElectron) {
-                try {
-                    matches = await window.electronAPI.loadMatches();
-                    console.log('Electronからデータを読み込みました:', matches.length);
-                } catch (error) {
-                    console.error('Electronデータ読み込みエラー:', error);
-                    matches = [];
-                }
-            } else {
-                // ブラウザ版（従来通り）
-                matches = JSON.parse(localStorage.getItem('shadowverse-matches') || '[]');
-            }
-        }
-        
-        // データ保存（Electron対応）
-        async function saveMatches() {
-            if (isElectron) {
-                try {
-                    await window.electronAPI.saveMatches(matches);
-                    console.log('Electronにデータを保存しました');
-                } catch (error) {
-                    console.error('Electronデータ保存エラー:', error);
-                }
-            } else {
-                // ブラウザ版（従来通り）
-                localStorage.setItem('shadowverse-matches', JSON.stringify(matches));
-            }
-        }
-
-        // フォーム値の読み込み（Electron対応）
-        async function loadSavedValues() {
-            let savedValues = {};
-            
-            if (isElectron) {
-                try {
-                    const config = await window.electronAPI.getConfig();
-                    savedValues = config.formValues || {};
-                } catch (error) {
-                    console.error('設定読み込みエラー:', error);
-                }
-            } else {
-                savedValues = JSON.parse(localStorage.getItem('shadowverse-form-values') || '{}');
-            }
+        // 保存された値の読み込み
+        function loadSavedValues() {
+            const savedValues = JSON.parse(localStorage.getItem('shadowverse-form-values') || '{}');
             
             // ローカルタイムゾーン基準の日付取得
             const today = new Date();
@@ -1117,7 +1067,7 @@
             if (savedValues.currentGroup) document.getElementById('current-group').value = savedValues.currentGroup;
         }
 
-        // フォーム値の保存（Electron対応）
+        // フォーム値の保存
         function saveFormValues() {
             const values = {
                 mode: document.getElementById('mode').value,
@@ -1126,13 +1076,7 @@
                 currentRank: document.getElementById('current-rank').value,
                 currentGroup: document.getElementById('current-group').value,
             };
-            
-            if (isElectron) {
-                // Electronでは設定として保存
-                window.electronAPI.saveConfig({ formValues: values });
-            } else {
-                localStorage.setItem('shadowverse-form-values', JSON.stringify(values));
-            }
+            localStorage.setItem('shadowverse-form-values', JSON.stringify(values));
         }
 
         // フォーム送信処理
@@ -1154,8 +1098,8 @@
             };
 
             matches.push(match);
-            await saveMatches(); // データ保存
-          
+            localStorage.setItem('shadowverse-matches', JSON.stringify(matches));
+            
             // フォーム値を保存
             saveFormValues();
             
@@ -2111,85 +2055,6 @@
             }
         });
 
-
-        // Electronイベントリスナー設定
-        function setupElectronListeners() {
-            // ファイル変更通知
-            window.electronAPI.onFileChanged(async () => {
-                console.log('外部からファイルが変更されました');
-                await loadMatches();
-                updateStats();
-                updateDeckFilter();
-                displayHistory();
-                
-                // 通知表示
-                showNotification('データが同期されました', 'success');
-            });
-        
-            // 手動同期
-            window.electronAPI.onManualSync(async () => {
-                await loadMatches();
-                updateStats();
-                updateDeckFilter();
-                displayHistory();
-                showNotification('手動同期が完了しました', 'success');
-            });
-        
-            // 同期設定ダイアログ
-            window.electronAPI.onOpenSyncSettings(async () => {
-                const dataPath = await window.electronAPI.getDataPath();
-                alert(`データファイルの場所:\n${dataPath}\n\nブラウザ版と同期するには、このファイルをWebアプリでインポートしてください。`);
-            });
-        
-            // データエクスポート
-            window.electronAPI.onExportData(() => {
-                exportData();
-            });
-        }
-        
-        // 通知表示関数
-        function showNotification(message, type = 'info') {
-            const notification = document.createElement('div');
-            notification.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                padding: 15px 20px;
-                border-radius: 8px;
-                color: white;
-                font-weight: 600;
-                z-index: 10000;
-                opacity: 0;
-                transition: opacity 0.3s ease;
-            `;
-            
-            switch (type) {
-                case 'success':
-                    notification.style.background = 'linear-gradient(135deg, #4caf50 0%, #66bb6a 100%)';
-                    break;
-                case 'error':
-                    notification.style.background = 'linear-gradient(135deg, #f44336 0%, #ef5350 100%)';
-                    break;
-                default:
-                    notification.style.background = 'linear-gradient(135deg, #4a9eff 0%, #64b5f6 100%)';
-            }
-            
-            notification.textContent = message;
-            document.body.appendChild(notification);
-            
-            // フェードイン
-            setTimeout(() => {
-                notification.style.opacity = '1';
-            }, 100);
-            
-            // 3秒後にフェードアウト
-            setTimeout(() => {
-                notification.style.opacity = '0';
-                setTimeout(() => {
-                    document.body.removeChild(notification);
-                }, 300);
-            }, 3000);
-        }
     
     </script>
 </body>
