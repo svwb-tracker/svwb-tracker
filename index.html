@@ -828,10 +828,43 @@
         <!-- 統計タブ -->
         <div id="stats" class="tab-content">
             <div class="stats-filter">
-                <label for="deck-filter">デッキフィルター:</label>
-                <select id="deck-filter" onchange="updateStats()">
-                    <option value="">全デッキ</option>
-                </select>
+                <div class="filter-row">
+                    <div class="form-group">
+                        <label for="deck-filter">デッキフィルター:</label>
+                        <select id="deck-filter" onchange="updateStats()">
+                            <option value="">全デッキ</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="period-filter">期間フィルター:</label>
+                        <select id="period-filter" onchange="handlePeriodFilterChange()">
+                            <option value="">全期間</option>
+                            <option value="today">今日</option>
+                            <option value="yesterday">昨日</option>
+                            <option value="last7days">過去7日</option>
+                            <option value="last14days">過去14日</option>
+                            <option value="last30days">過去30日</option>
+                            <option value="thismonth">今月</option>
+                            <option value="lastmonth">先月</option>
+                            <option value="custom">カスタム期間</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group" id="custom-date-start" style="display: none;">
+                        <label for="start-date">開始日:</label>
+                        <input type="date" id="start-date" onchange="updateStats()">
+                    </div>
+                    
+                    <div class="form-group" id="custom-date-end" style="display: none;">
+                        <label for="end-date">終了日:</label>
+                        <input type="date" id="end-date" onchange="updateStats()">
+                    </div>
+                </div>
+                
+                <div class="filter-info" id="filter-info">
+                    <span class="filter-summary">全ての戦績を表示中</span>
+                </div>
             </div>
 
             <div class="stats-grid">
@@ -912,7 +945,7 @@
                 </div>
             </div>
 
-        <!-- 新規追加：ランク進捗表示 -->
+        <!-- ランク進捗表示 -->
         <div class="rank-progress-container" id="rank-progress-container" style="display: none;">
             <div class="rank-progress-card">
                 <div class="progress-header">
@@ -1327,11 +1360,22 @@
         // 統計更新
         function updateStats() {
             const deckFilter = document.getElementById('deck-filter').value;
+            const periodFilter = document.getElementById('period-filter').value;
+            
             let filteredMatches = matches;
             
+            // デッキフィルター適用
             if (deckFilter) {
-                filteredMatches = matches.filter(match => match.deckName === deckFilter);
+                filteredMatches = filteredMatches.filter(match => match.deckName === deckFilter);
             }
+            
+            // 期間フィルター適用
+            if (periodFilter) {
+                filteredMatches = applyPeriodFilter(filteredMatches, periodFilter);
+            }
+            
+            // フィルター情報を表示
+            updateFilterInfo(filteredMatches.length, deckFilter, periodFilter);
             
             updateOverallStats(filteredMatches);
             updateClassStats(filteredMatches);
@@ -2559,6 +2603,133 @@
             console.log('グループ変動:', data.groupChanged ? data.groupChangeInfo : 'なし');
         }
 
+        // ========== 期間フィルター関数群 ==========
+        
+        // 期間フィルター変更時の処理
+        function handlePeriodFilterChange() {
+            const periodFilter = document.getElementById('period-filter').value;
+            const customDateStart = document.getElementById('custom-date-start');
+            const customDateEnd = document.getElementById('custom-date-end');
+            
+            if (periodFilter === 'custom') {
+                customDateStart.style.display = 'block';
+                customDateEnd.style.display = 'block';
+            } else {
+                customDateStart.style.display = 'none';
+                customDateEnd.style.display = 'none';
+                updateStats(); // カスタム以外の場合は即座に更新
+            }
+        }
+        
+        // 期間フィルターの適用
+        function applyPeriodFilter(matches, periodType) {
+            const now = new Date();
+            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            
+            let startDate, endDate;
+            
+            switch (periodType) {
+                case 'today':
+                    startDate = new Date(today);
+                    endDate = new Date(today.getTime() + 24 * 60 * 60 * 1000);
+                    break;
+                    
+                case 'yesterday':
+                    startDate = new Date(today.getTime() - 24 * 60 * 60 * 1000);
+                    endDate = new Date(today);
+                    break;
+                    
+                case 'last7days':
+                    startDate = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+                    endDate = new Date(today.getTime() + 24 * 60 * 60 * 1000);
+                    break;
+                    
+                case 'last14days':
+                    startDate = new Date(today.getTime() - 14 * 24 * 60 * 60 * 1000);
+                    endDate = new Date(today.getTime() + 24 * 60 * 60 * 1000);
+                    break;
+                    
+                case 'last30days':
+                    startDate = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
+                    endDate = new Date(today.getTime() + 24 * 60 * 60 * 1000);
+                    break;
+                    
+                case 'thismonth':
+                    startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+                    endDate = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+                    break;
+                    
+                case 'lastmonth':
+                    startDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+                    endDate = new Date(now.getFullYear(), now.getMonth(), 1);
+                    break;
+                    
+                case 'custom':
+                    const startDateInput = document.getElementById('start-date').value;
+                    const endDateInput = document.getElementById('end-date').value;
+                    
+                    if (!startDateInput || !endDateInput) {
+                        return matches;
+                    }
+                    
+                    startDate = new Date(startDateInput);
+                    endDate = new Date(endDateInput);
+                    endDate.setHours(23, 59, 59, 999);
+                    break;
+                    
+                default:
+                    return matches;
+            }
+            
+            return matches.filter(match => {
+                const matchDate = new Date(match.date);
+                return matchDate >= startDate && matchDate <= endDate;
+            });
+        }
+        
+        // フィルター情報の表示更新
+        function updateFilterInfo(matchCount, deckFilter, periodFilter) {
+            const filterSummary = document.querySelector('.filter-summary');
+            
+            let summaryText = `${matchCount}件の戦績`;
+            
+            const filterParts = [];
+            
+            if (deckFilter) {
+                filterParts.push(`デッキ: ${deckFilter}`);
+            }
+            
+            if (periodFilter) {
+                const periodNames = {
+                    'today': '今日',
+                    'yesterday': '昨日', 
+                    'last7days': '過去7日',
+                    'last14days': '過去14日',
+                    'last30days': '過去30日',
+                    'thismonth': '今月',
+                    'lastmonth': '先月',
+                    'custom': 'カスタム期間'
+                };
+                
+                let periodText = periodNames[periodFilter] || periodFilter;
+                
+                if (periodFilter === 'custom') {
+                    const startDate = document.getElementById('start-date').value;
+                    const endDate = document.getElementById('end-date').value;
+                    if (startDate && endDate) {
+                        periodText = `${startDate} ～ ${endDate}`;
+                    }
+                }
+                
+                filterParts.push(`期間: ${periodText}`);
+            }
+            
+            if (filterParts.length > 0) {
+                summaryText += ` (${filterParts.join(', ')})`;
+            }
+            
+            filterSummary.textContent = summaryText;
+        }
 
     
     </script>
