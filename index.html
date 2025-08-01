@@ -717,7 +717,7 @@
                     </div>
                 </div>
                 <div class="stats-card">
-                    <h3>日別勝率推移</h3>
+                    <h3>勝率推移（累積）</h3>
                     <div class="chart-container">
                         <canvas id="daily-chart"></canvas>
                     </div>
@@ -1604,7 +1604,7 @@
             });
         }
 
-        // 日別統計
+        // 勝率推移（累積）
         function updateDailyStats(data) {
             const ctx = document.getElementById('daily-chart').getContext('2d');
             
@@ -1612,35 +1612,66 @@
                 charts.daily.destroy();
             }
             
-            const dailyStats = {};
-            data.forEach(match => {
-                if (!dailyStats[match.date]) {
-                    dailyStats[match.date] = { wins: 0, total: 0 };
-                }
-                dailyStats[match.date].total++;
+            if (data.length === 0) {
+                charts.daily = new Chart(ctx, {
+                    type: 'line',
+                    data: { labels: [], datasets: [] },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { labels: { color: '#e0e0e0' } }
+                        }
+                    }
+                });
+                return;
+            }
+            
+            // 日付順にソート
+            const sortedData = [...data].sort((a, b) => new Date(a.date) - new Date(b.date));
+            
+            // 累積勝率を計算
+            const cumulativeData = [];
+            let totalWins = 0;
+            let totalGames = 0;
+            
+            sortedData.forEach(match => {
+                totalGames++;
                 if (match.result === '勝利') {
-                    dailyStats[match.date].wins++;
+                    totalWins++;
                 }
+                
+                const winRate = (totalWins / totalGames * 100).toFixed(1);
+                cumulativeData.push({
+                    date: match.date,
+                    winRate: parseFloat(winRate),
+                    wins: totalWins,
+                    total: totalGames,
+                    losses: totalGames - totalWins
+                });
             });
             
-            const sortedDates = Object.keys(dailyStats).sort();
-            const winRates = sortedDates.map(date => 
-                dailyStats[date].total > 0 ? 
-                ((dailyStats[date].wins / dailyStats[date].total) * 100).toFixed(1) : 0
-            );
+            // 日付ラベルとデータを準備
+            const labels = cumulativeData.map(item => item.date);
+            const winRateData = cumulativeData.map(item => item.winRate);
             
             charts.daily = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: sortedDates,
+                    labels: labels,
                     datasets: [{
-                        label: '勝率 (%)',
-                        data: winRates,
+                        label: '累積勝率 (%)',
+                        data: winRateData,
                         borderColor: '#4a9eff',
                         backgroundColor: 'rgba(74, 158, 255, 0.1)',
                         borderWidth: 3,
                         fill: true,
-                        tension: 0.4
+                        tension: 0.1,
+                        pointBackgroundColor: '#4a9eff',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2,
+                        pointRadius: 4,
+                        pointHoverRadius: 6
                     }]
                 },
                 options: {
@@ -1649,18 +1680,57 @@
                     plugins: {
                         legend: {
                             labels: { color: '#e0e0e0' }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(45, 45, 45, 0.9)',
+                            titleColor: '#e0e0e0',
+                            bodyColor: '#e0e0e0',
+                            borderColor: '#4a9eff',
+                            borderWidth: 1,
+                            callbacks: {
+                                title: function(context) {
+                                    return `${context[0].label} 時点`;
+                                },
+                                label: function(context) {
+                                    const dataIndex = context.dataIndex;
+                                    const data = cumulativeData[dataIndex];
+                                    return [
+                                        `累積勝率: ${data.winRate}%`,
+                                        `累積戦績: ${data.wins}勝${data.losses}敗`,
+                                        `総試合数: ${data.total}戦`
+                                    ];
+                                }
+                            }
                         }
                     },
                     scales: {
                         x: {
-                            ticks: { color: '#e0e0e0' },
-                            grid: { color: '#555' }
+                            ticks: { 
+                                color: '#e0e0e0',
+                                maxTicksLimit: 10
+                            },
+                            grid: { color: '#555' },
+                            title: {
+                                display: true,
+                                text: '日付',
+                                color: '#e0e0e0'
+                            }
                         },
                         y: {
                             ticks: { color: '#e0e0e0' },
                             grid: { color: '#555' },
-                            max: 100
+                            min: 0,
+                            max: 100,
+                            title: {
+                                display: true,
+                                text: '勝率 (%)',
+                                color: '#e0e0e0'
+                            }
                         }
+                    },
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
                     }
                 }
             });
