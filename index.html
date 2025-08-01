@@ -502,6 +502,167 @@
             transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(108, 117, 125, 0.3);
         }
+
+        /* ランク進捗表示のスタイル */
+        .rank-progress-container {
+            margin-bottom: 20px;
+        }
+        
+        .rank-progress-card {
+            background: linear-gradient(135deg, #3a3a3a 0%, #4a4a4a 100%);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+            border-left: 4px solid #4a9eff;
+        }
+        
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .progress-header h3 {
+            color: #4a9eff;
+            margin: 0;
+            font-size: 1.2rem;
+        }
+        
+        .current-group-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .group-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+        
+        .group-badge.エメラルド { background: #8BC34A; color: white; }
+        .group-badge.トパーズ { background: #FF9800; color: white; }
+        .group-badge.ルビー { background: #F44336; color: white; }
+        .group-badge.サファイア { background: #2196F3; color: white; }
+        .group-badge.ダイヤモンド { background: #FFFFFF; color: #333; }
+        
+        .battle-count {
+            color: #a0a0a0;
+            font-size: 0.9rem;
+        }
+        
+        .progress-details {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .recent-record {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+        }
+        
+        .record-text {
+            color: #e0e0e0;
+            font-weight: 500;
+        }
+        
+        .group-change-info {
+            color: #4a9eff;
+            font-size: 0.8rem;
+            font-style: italic;
+        }
+        
+        .progress-bars {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .promotion-progress, .demotion-progress {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .progress-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        
+        .promotion-progress .progress-label {
+            color: #4CAF50;
+        }
+        
+        .demotion-progress .progress-label {
+            color: #FF9800;
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress-bar.promotion .progress-fill {
+            background: linear-gradient(90deg, #4CAF50, #66BB6A);
+            height: 100%;
+            transition: width 0.3s ease;
+            border-radius: 4px;
+        }
+        
+        .progress-bar.demotion .progress-fill {
+            background: linear-gradient(90deg, #FF9800, #FFB74D);
+            height: 100%;
+            transition: width 0.3s ease;
+            border-radius: 4px;
+        }
+        
+        .promotion-ready {
+            animation: glow-green 2s infinite;
+        }
+        
+        .demotion-danger {
+            animation: glow-red 2s infinite;
+        }
+        
+        @keyframes glow-green {
+            0%, 100% { box-shadow: 0 0 5px rgba(76, 175, 80, 0.5); }
+            50% { box-shadow: 0 0 20px rgba(76, 175, 80, 0.8); }
+        }
+        
+        @keyframes glow-red {
+            0%, 100% { box-shadow: 0 0 5px rgba(255, 152, 0, 0.5); }
+            50% { box-shadow: 0 0 20px rgba(255, 152, 0, 0.8); }
+        }
+        
+        @media (max-width: 768px) {
+            .progress-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .progress-bars {
+                grid-template-columns: 1fr;
+            }
+            
+            .recent-record {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+        }
         
     </style>
 </head>
@@ -750,6 +911,48 @@
                     </div>
                 </div>
             </div>
+
+        <!-- 新規追加：ランク進捗表示 -->
+        <div class="rank-progress-container" id="rank-progress-container" style="display: none;">
+            <div class="rank-progress-card">
+                <div class="progress-header">
+                    <h3><i class="fas fa-trophy"></i> 現在のランク進捗</h3>
+                    <div class="current-group-info">
+                        <span class="group-badge" id="current-group-display"></span>
+                        <span class="battle-count" id="battle-count-display"></span>
+                    </div>
+                </div>
+                
+                <div class="progress-details">
+                    <div class="recent-record">
+                        <span class="record-text" id="recent-record-display"></span>
+                        <span class="group-change-info" id="group-change-info"></span>
+                    </div>
+                    
+                    <div class="progress-bars">
+                        <div class="promotion-progress" id="promotion-section">
+                            <div class="progress-label">
+                                <i class="fas fa-arrow-up"></i>
+                                <span id="promotion-status"></span>
+                            </div>
+                            <div class="progress-bar promotion">
+                                <div class="progress-fill" id="promotion-bar"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="demotion-progress" id="demotion-section">
+                            <div class="progress-label">
+                                <i class="fas fa-arrow-down"></i>
+                                <span id="demotion-status"></span>
+                            </div>
+                            <div class="progress-bar demotion">
+                                <div class="progress-fill" id="demotion-bar"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
         
             <div class="table-container">
                 <table class="data-table" id="history-table">
@@ -1039,6 +1242,7 @@
                 setTimeout(() => updateStats(), 100);
             } else if (tabName === 'history') {
                 displayHistory();
+                updateRankProgress();
             }
         }
 
@@ -2131,6 +2335,7 @@
                 displayHistory();
                 updateStats();
                 updateDeckFilter();
+                updateRankProgress();
                 
                 // モーダルを閉じる
                 closeEditModal();
@@ -2143,6 +2348,217 @@
                 closeEditModal();
             }
         });
+
+
+        // ========== ランク進捗計算関数群 ==========
+        
+        // メイン：ランク進捗の更新関数
+        function updateRankProgress() {
+            if (matches.length === 0) {
+                document.getElementById('rank-progress-container').style.display = 'none';
+                return;
+            }
+            
+            const progressData = calculateRankProgressData();
+            displayRankProgress(progressData);
+            document.getElementById('rank-progress-container').style.display = 'block';
+        }
+        
+        // ランク進捗データの計算
+        function calculateRankProgressData() {
+            if (matches.length === 0) return null;
+            
+            // 最新のグループを取得
+            const currentGroup = matches[matches.length - 1].currentGroup;
+            
+            // グループ変動を検出して、関連する試合を取得
+            let relevantMatches = [];
+            let groupChangeInfo = '';
+            let groupChanged = false;
+            
+            // 最新から過去に遡ってグループ変動を探す
+            for (let i = matches.length - 1; i >= 0; i--) {
+                const match = matches[i];
+                
+                // 最初の試合は必ず追加
+                if (relevantMatches.length === 0) {
+                    relevantMatches.unshift(match);
+                    continue;
+                }
+                
+                // グループが変わった場合、そこで区切る
+                if (match.currentGroup !== currentGroup) {
+                    groupChangeInfo = `${match.currentGroup} → ${currentGroup}`;
+                    groupChanged = true;
+                    break;
+                }
+                
+                relevantMatches.unshift(match);
+                
+                // 最大20戦まで
+                if (relevantMatches.length >= 20) {
+                    break;
+                }
+            }
+            
+            // 勝敗を集計
+            const wins = relevantMatches.filter(m => m.result === '勝利').length;
+            const losses = relevantMatches.filter(m => m.result === '敗北').length;
+            const totalGames = relevantMatches.length;
+            
+            // 昇格・降格の閾値を取得
+            const promotionThreshold = getPromotionThreshold(currentGroup);
+            const demotionThreshold = getDemotionThreshold(currentGroup);
+            
+            // 昇格・降格判定
+            const isPromoted = promotionThreshold && wins >= promotionThreshold;
+            const isDemoted = demotionThreshold && losses >= demotionThreshold;
+            
+            return {
+                currentGroup: currentGroup,
+                totalGames: totalGames,
+                wins: wins,
+                losses: losses,
+                promotionThreshold: promotionThreshold,
+                demotionThreshold: demotionThreshold,
+                groupChangeInfo: groupChangeInfo,
+                groupChanged: groupChanged,
+                isPromoted: isPromoted,
+                isDemoted: isDemoted,
+                winsToPromotion: promotionThreshold ? Math.max(0, promotionThreshold - wins) : null,
+                lossesToDemotion: demotionThreshold ? Math.max(0, demotionThreshold - losses) : null
+            };
+        }
+        
+        // 昇格に必要な勝数の閾値
+        function getPromotionThreshold(group) {
+            const thresholds = {
+                'エメラルド': 10,  // エメラルド→トパーズ：20戦で10勝
+                'トパーズ': 11,    // トパーズ→ルビー：20戦で11勝
+                'ルビー': 12,      // ルビー→サファイア：20戦で12勝
+                'サファイア': 13   // サファイア→ダイヤモンド：20戦で13勝
+            };
+            return thresholds[group] || null;
+        }
+        
+        // 降格に必要な敗数の閾値
+        function getDemotionThreshold(group) {
+            const thresholds = {
+                'ダイヤモンド': 11,  // ダイヤモンド→サファイア：20戦で11敗
+                'サファイア': 12,    // サファイア→ルビー：20戦で12敗
+                'ルビー': 13,        // ルビー→トパーズ：20戦で13敗
+                'トパーズ': 14       // トパーズ→エメラルド：20戦で14敗
+            };
+            return thresholds[group] || null;
+        }
+        
+        // 進捗の表示
+        function displayRankProgress(data) {
+            if (!data) return;
+            
+            // グループ表示
+            const groupDisplay = document.getElementById('current-group-display');
+            groupDisplay.textContent = data.currentGroup;
+            groupDisplay.className = `group-badge ${data.currentGroup}`;
+            
+            // 試合数表示
+            document.getElementById('battle-count-display').textContent = `${data.totalGames}/20戦`;
+            
+            // 勝敗記録表示
+            document.getElementById('recent-record-display').textContent = `直近成績: ${data.wins}勝${data.losses}敗`;
+            
+            // グループ変動情報
+            const groupChangeElement = document.getElementById('group-change-info');
+            if (data.groupChanged) {
+                groupChangeElement.textContent = `※ ${data.groupChangeInfo}後から集計`;
+            } else if (data.totalGames < 20) {
+                groupChangeElement.textContent = `※ ${20 - data.totalGames}戦未満でも規定勝敗で変動`;
+            } else {
+                groupChangeElement.textContent = '';
+            }
+            
+            // 昇格進捗の表示
+            displayPromotionProgress(data);
+            
+            // 降格進捗の表示
+            displayDemotionProgress(data);
+        }
+        
+        // 昇格進捗の表示
+        function displayPromotionProgress(data) {
+            const promotionSection = document.getElementById('promotion-section');
+            const promotionStatus = document.getElementById('promotion-status');
+            const promotionBar = document.getElementById('promotion-bar');
+            
+            if (data.promotionThreshold) {
+                promotionSection.style.display = 'flex';
+                
+                if (data.isPromoted || data.winsToPromotion === 0) {
+                    promotionStatus.innerHTML = '<i class="fas fa-crown"></i> 昇格確定！';
+                    promotionSection.classList.add('promotion-ready');
+                    promotionBar.style.width = '100%';
+                } else {
+                    promotionStatus.textContent = `昇格まで: あと${data.winsToPromotion}勝`;
+                    promotionSection.classList.remove('promotion-ready');
+                    const percentage = Math.min(100, (data.wins / data.promotionThreshold) * 100);
+                    promotionBar.style.width = `${percentage}%`;
+                }
+            } else {
+                // ダイヤモンドの場合は昇格なし
+                promotionSection.style.display = 'none';
+            }
+        }
+        
+        // 降格進捗の表示
+        function displayDemotionProgress(data) {
+            const demotionSection = document.getElementById('demotion-section');
+            const demotionStatus = document.getElementById('demotion-status');
+            const demotionBar = document.getElementById('demotion-bar');
+            
+            if (data.demotionThreshold) {
+                demotionSection.style.display = 'flex';
+                
+                if (data.isDemoted || data.lossesToDemotion === 0) {
+                    demotionStatus.innerHTML = '<i class="fas fa-exclamation-triangle"></i> 降格確定';
+                    demotionSection.classList.add('demotion-danger');
+                    demotionBar.style.width = '100%';
+                } else {
+                    demotionStatus.textContent = `降格まで: あと${data.lossesToDemotion}敗`;
+                    demotionSection.classList.remove('demotion-danger');
+                    const percentage = Math.min(100, (data.losses / data.demotionThreshold) * 100);
+                    demotionBar.style.width = `${percentage}%`;
+                }
+            } else {
+                // エメラルドの場合は降格なし
+                demotionSection.style.display = 'none';
+            }
+        }
+        
+        // 20戦未満での早期昇格・降格チェック
+        function checkEarlyRankChange(data) {
+            if (data.totalGames >= 20) return false;
+            
+            // 20戦未満でも規定勝敗に達した場合
+            if (data.isPromoted || data.isDemoted) {
+                return true;
+            }
+            
+            return false;
+        }
+        
+        // デバッグ用：進捗データをコンソールに出力
+        function debugRankProgress() {
+            const data = calculateRankProgressData();
+            console.log('=== ランク進捗デバッグ情報 ===');
+            console.log('現在グループ:', data.currentGroup);
+            console.log('試合数:', data.totalGames);
+            console.log('勝数:', data.wins, '/ 必要勝数:', data.promotionThreshold);
+            console.log('敗数:', data.losses, '/ 危険敗数:', data.demotionThreshold);
+            console.log('昇格まであと:', data.winsToPromotion, '勝');
+            console.log('降格まであと:', data.lossesToDemotion, '敗');
+            console.log('グループ変動:', data.groupChanged ? data.groupChangeInfo : 'なし');
+        }
+
 
     
     </script>
